@@ -9,14 +9,14 @@ from selenium.common.exceptions import TimeoutException
 
 class AutoSearch:
     def __init__(self, t, p):
-        focus_delays = 3
-        click_delays = 5
+        focus_delays = 2
+        click_delays = 4
         i = 0
         while i < t:
             #open browser and go to google.com
             browser = webdriver.Firefox()
 
-            browser.maximize_window()
+            #browser.maximize_window()
             time.sleep(focus_delays)
             browser.get('http://www.google.com')
 
@@ -25,80 +25,126 @@ class AutoSearch:
             search.send_keys(p)
             search.send_keys(Keys.RETURN) # hit return after you enter search text
 
+            print(p)
+
+            hasgoogleplace = True
             try:
                 #wait the page finish loading then find "More Place"
                 element = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "_R4k")))
                 element.send_keys(Keys.NULL)
                 time.sleep(focus_delays)
+                element.click()  # click the link
+                time.sleep(click_delays)
             except TimeoutException:
-                browser.quit()
-                break
-            element.click() #click the link
+                hasgoogleplace = False
+                print("Has no More Places Button")
 
-            time.sleep(click_delays)
-            nextpage = False
-            while True:
-                if "NextArts Audio Visual" in browser.page_source:
-                    try:
-                        temp = WebDriverWait(browser, 10).until(
-                            EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "NextArts Audio")))
+            in_map_not_found = False
+            if hasgoogleplace:
+                nextpage = False
+                isClick = False
+                while True:
+                    if "NextArts" in browser.page_source:
+                        try:
+                            temp = WebDriverWait(browser, 10).until(
+                                EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, "NextArts")))
+                        except TimeoutException:
+                            break
                         temp.send_keys(Keys.NULL)
                         time.sleep(focus_delays)
-                    except TimeoutException:
-                        browser.quit()
+                        temp.click()
+                        isClick = True
+                        time.sleep(click_delays)
                         break
-                    temp.click()
-                    time.sleep(click_delays)
-                    break
-                else:
+                    else:
+                        try:
+                            n = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.LINK_TEXT, "Next")))
+                        except TimeoutException:
+                            in_map_not_found = True
+                            print("not found in map")
+                            break
+                        nextpage = True
+                        n.send_keys(Keys.NULL)
+                        time.sleep(focus_delays)
+                        n.click()
+                        time.sleep(click_delays)
+
+                if isClick:
                     try:
-                        n = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.LINK_TEXT, "Next")))
+                        temp1 = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@class="_chp ab_button"]')))
+                        temp1.click()
+                        print("---found in Google map")
                     except TimeoutException:
-                        browser.quit()
+                        print("cannot find nextarts link")
                         break
-                    nextpage = True
-                    n.send_keys(Keys.NULL)
-                    time.sleep(focus_delays)
-                    n.click()
+
+                if not in_map_not_found:
                     time.sleep(click_delays)
-
-            try:
-                temp1 = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@class="_chp ab_button"]')))
-            except TimeoutException:
-                browser.quit()
-                break
-            temp1.click()
-            time.sleep(click_delays)
-            browser.back() #go back to the privious page
-            time.sleep(click_delays)
-            browser.back()
-            time.sleep(click_delays)
-            browser.back()
-            time.sleep(click_delays)
-
-            if nextpage:
+                    browser.back()
+                    time.sleep(click_delays)
+                    browser.back()
+                time.sleep(click_delays)
                 browser.back()
-                time.sleep(10)
+                time.sleep(click_delays)
 
-            result = "NextArts.org | Audio, video, lighting, party rentals - Bay Area (415) 970 ..."
+                if nextpage:
+                    browser.back()
+                    time.sleep(click_delays)
+            else:
+                try:
+                    gmap = WebDriverWait(browser, 5).until(EC.presence_of_element_located((By.LINK_TEXT, "Website")))
+                    gmap.send_keys(Keys.NULL)
+                    time.sleep(focus_delays)
+                    gmap.click()
+                    print("---found in Google map")
+                    time.sleep(click_delays)
+                    browser.back()
+                    time.sleep(click_delays)
+                except TimeoutException:
+                    print("not found in map")
 
+
+            site1 = "NextArts.org"
+            site2 = "Affordable Daily Large Flat Screen"
+
+            #need to refresh the page to get page_source
+            browser.refresh()
+            page = 1
             # search result in organic result, click next page if cannot find
             while True:
-                if result in browser.page_source:
+                if site1 in browser.page_source:
+                    print("found site 1")
                     try:
-                        c = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.LINK_TEXT, result)))
+                        c = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, site1)))
                     except TimeoutException:
                         browser.quit()
                         break
                     c.send_keys(Keys.NULL)
                     time.sleep(focus_delays)
                     c.click()
+                    print("---found in Organic at Page " + str(page))
+                    time.sleep(click_delays)
+                    break
+                elif site2 in browser.page_source:
+                    print("found site 2")
+                    try:
+                        c = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.PARTIAL_LINK_TEXT, site2)))
+                    except TimeoutException:
+                        browser.quit()
+                        break
+                    c.send_keys(Keys.NULL)
+                    time.sleep(focus_delays)
+                    c.click()
+                    print("---found in Organic at Page " + str(page))
                     time.sleep(click_delays)
                     break
                 else:
                     try:
                         n1 = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.LINK_TEXT, "Next")))
+                        page += 1
+
                     except TimeoutException:
+                        print("not in organic")
                         browser.quit()
                         break
                     n1.send_keys(Keys.NULL)
@@ -106,10 +152,15 @@ class AutoSearch:
                     n1.click()
                     time.sleep(click_delays)
             browser.quit()
+            print("---------------------------------------------------------------------")
             i += 1
 
-phrases = ["audio visual rental san francisco",
-           "event lighting san francisco"]
+phrases = ["wedding lighting san francisco bay area",
+"Microphone rental san francisco",
+"Wireless microphone rental san francisco",
+"Microphone rental napa",
+"Wireless microphone rental napa"
+]
 times = 1
 for phrase in phrases:
     AutoSearch(times, phrase)
