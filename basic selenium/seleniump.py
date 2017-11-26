@@ -112,7 +112,7 @@ class AutoSearch:
             i += 1
 
     def open_google_and_search(self, ph, fd, b):
-        b.maximize_window()
+        #b.maximize_window()
         time.sleep(fd)
         b.get('http://www.google.com')
 
@@ -127,10 +127,7 @@ class AutoSearch:
         try:
             # wait the page finish loading then find "More Place"
             e = WebDriverWait(b, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "_R4k")))
-            e.send_keys(Keys.NULL)
-            time.sleep(fd)
-            e.click()  # click the link
-            time.sleep(cd)
+            self.focus_and_click(e, fd, cd)
             return True
         except TimeoutException:
             print("no More Places button")
@@ -143,20 +140,14 @@ class AutoSearch:
         except TimeoutException:
             print("cannot find (" + pl + ") link")
             return
-        temp.send_keys(Keys.NULL)
-        time.sleep(fd)
-        temp.click()
-        time.sleep(cd)
+        self.focus_and_click(temp, fd, cd)
 
     def search_next_page(self, fd, cd, b):
         try:
             n = WebDriverWait(b, 10).until(EC.presence_of_element_located((By.LINK_TEXT, "Next")))
         except TimeoutException:
             return True
-        n.send_keys(Keys.NULL)
-        time.sleep(fd)
-        n.click()
-        time.sleep(cd)
+        self.focus_and_click(n, fd, cd)
         return False
 
     def click_link_in_map(self, b):
@@ -173,11 +164,8 @@ class AutoSearch:
     def only_one_in_map(self, fd, cd, b):
         try:
             gmap = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.LINK_TEXT, "Website")))
-            gmap.send_keys(Keys.NULL)
-            time.sleep(fd)
-            gmap.click()
+            self.focus_and_click(gmap, fd, cd)
             print("---found in Google map")
-            time.sleep(cd)
             b.back()
             time.sleep(cd)
         except TimeoutException:
@@ -189,12 +177,15 @@ class AutoSearch:
         except TimeoutException:
             b.quit()
             return False
-        c.send_keys(Keys.NULL)
-        time.sleep(fd)
-        c.click()
-        time.sleep(cd)
+        self.focus_and_click(c, fd, cd)
         print("---found in Organic at Page " + str(pages))
         return True
+
+    def focus_and_click(self, obj, fd, cd):
+        obj.send_keys(Keys.NULL)
+        time.sleep(fd)
+        obj.click()  # click the link
+        time.sleep(cd)
 
 
 phrases = ["event lighting san francisco",
