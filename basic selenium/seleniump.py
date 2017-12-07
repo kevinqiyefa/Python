@@ -9,14 +9,13 @@ import random
 
 
 class AutoSearch:
-
     def __init__(self, t, p, br):
-        print("<< Using "+br + " >>")
+        print("<< Using " + br + " >>")
         focus_delays = 2
         click_delays = 7
         i = 0
-        maplinktext = "NextArts Napa Sonoma Audio"
-        #optional loop for each keyword
+
+        # optional loop for each keyword
         while i < t:
             if br == "Firefox":
                 browser = webdriver.Firefox()
@@ -28,27 +27,34 @@ class AutoSearch:
             if p != "NextArts":
                 print("=======Search in Google Map=======")
                 hasgoogleplace = self.click_more_place_button(focus_delays, click_delays, browser)
-    
+
                 in_map_not_found = False
+                part_text = "NextArts"
+                class_link = self.check_class_in_map_link(browser)
+
                 if hasgoogleplace:
                     nextpage = False
                     is_click = False
                     while True:
-                        part_text = "NextArts"
-                        if part_text in browser.page_source:
-                            self.click_part_text(focus_delays, click_delays, browser, part_text)
+
+                        map_class = self.check_class_in_map_link(browser)
+                        find_no_ad_link = self.find_without_ad(browser, part_text, map_class)
+
+                        if find_no_ad_link:
+                            time.sleep(3)
                             is_click = True
                             break
+
                         else:
                             in_map_not_found = self.search_next_page(focus_delays, click_delays, browser)
                             if in_map_not_found:
                                 print("not found in map")
                                 break
                             nextpage = True
-    
+
                     if is_click and not self.click_link_in_map(browser):
-                            break
-    
+                        break
+
                     if not in_map_not_found:
                         time.sleep(click_delays)
                         browser.back()
@@ -57,13 +63,12 @@ class AutoSearch:
                     time.sleep(click_delays)
                     browser.back()
                     time.sleep(click_delays)
-    
+
                     if nextpage:
                         browser.back()
                         time.sleep(click_delays)
-                elif maplinktext in browser.page_source:
+                elif self.find_without_ad(browser, part_text, class_link):
                     # no moreplace button but in map result, and there are more than one result.
-                    self.click_part_text(focus_delays, click_delays, browser, maplinktext)
                     self.click_link_in_map(browser)
                     time.sleep(click_delays)
                     browser.back()
@@ -71,71 +76,70 @@ class AutoSearch:
                     browser.back()
                     time.sleep(click_delays)
                 else:
-                    self.only_one_in_map(focus_delays,click_delays,browser)
+                    self.only_one_in_map(focus_delays, click_delays, browser)
 
             sites = ["NextArts.org | Audio, video, lighting",
                      "Affordable Daily Large Flat Screen",
-                     "NextArts Event Lighting - Contact Us",
-                     "Drapery Rentals - Exquisite",
-                     "Drape | NextArts.org NextArts",
+                     "Drape | NextArts.org NextArts - Bay Area",
                      "Event Lighting | NextArts.org",
-                     "Audio Visual Equipment Rentals - Contact Us",
                      "Audio Visual Equipment Rentals - Bay Area"]
-            
-            #need to refresh the page to get page_source
-            #browser.refresh()
+
+            # need to refresh the page to get page_source
+            browser.refresh()
+            time.sleep(click_delays)
             print("")
             print("=======Search in Oganic=======")
             page = 1
-            print("Search in Page: "+ str(page))
+            print("Search in Page: " + str(page))
             # search result in organic result, click next page if cannot find
             if p != "NextArts":
                 while True:
-                    
+
                     count_site = 0
                     foundsite = False
-                    
+
                     for site in sites:
                         if site in browser.page_source:
-                            print("found link: '"+ site + "'")
-                            found = True
+                            print("Found organic link: '" + site + "'")
+                            foundsite = True
                             count_site += 1
                             if not self.click_in_organic(focus_delays, click_delays, browser, site, page):
                                 print("cannot click the link")
                             time.sleep(click_delays)
-                            browser.back()                            
+                            browser.back()
 
-                
                     if not foundsite and count_site == 0:
-                        if (p == "lighting san francisco" or p == "lighting san francisco bay area" ) and page < 25:
+                        if (p == "lighting san francisco" or p == "lighting san francisco bay area") and page < 25:
                             page += 4
                         elif (p == "lighting company san francisco" or p == "lighting napa") and page < 6:
                             page += 5
-                        #elif p == "lighting napa" and page < 10:
+                        # elif p == "lighting napa" and page < 10:
                         #    page += 9
                         else:
-                            page += 1                        
+                            page += 1
                         pgs = str(page)
                         if self.search_next_page(focus_delays, click_delays, browser, pgs):
                             print("not in organic")
                             browser.quit()
                             break
                     else:
-                        if self.search_next_page(focus_delays, click_delays, browser, str(page+1)):
+                        page += 1
+                        if self.search_next_page(focus_delays, click_delays, browser, str(page)):
                             break
                         for site in sites:
                             if site in browser.page_source:
-                                print("found link: '"+ site + "'")
-                                found = True
+                                print("found link: '" + site + "'")
+                                foundsite = True
                                 count_site += 1
                                 if not self.click_in_organic(focus_delays, click_delays, browser, site, page):
                                     print("cannot click the link")
                                 time.sleep(click_delays)
-                                browser.back() 
+                                browser.back()
                         break
-                    
+
             else:
-                ending_site = ["BBB Business Profile | NextArts", "NextArts - Lighting & Decor", "NextArts (San Francisco, CA):", "NextArts - San Francisco"]
+                ending_site = ["BBB Business Profile | NextArts", "NextArts - Lighting & Decor",
+                               "NextArts (San Francisco, CA):", "NextArts - San Francisco"]
                 endlink = random.choice(ending_site)
                 time.sleep(focus_delays)
                 while True:
@@ -158,7 +162,7 @@ class AutoSearch:
             i += 1
 
     def open_google_and_search(self, ph, fd, b):
-        #b.maximize_window()
+        # b.maximize_window()
         time.sleep(fd)
         b.get('http://www.google.com')
 
@@ -167,7 +171,7 @@ class AutoSearch:
         search.send_keys(ph)
         search.send_keys(Keys.RETURN)  # hit return after you enter search text
 
-        print("Keywords: "+ph)
+        print("Keywords: " + ph)
 
     def click_more_place_button(self, fd, cd, b):
         try:
@@ -177,6 +181,27 @@ class AutoSearch:
             return True
         except TimeoutException:
             print("no More Places button")
+            return False
+
+    def check_class_in_map_link(self, b):
+        try:
+            temp = WebDriverWait(b, 1).until(
+                EC.presence_of_element_located((By.XPATH, "//*[contains(@class, '_iPk _Ml')]")))
+
+            return '_iPk _Ml'
+
+        except TimeoutException:
+            return '_iPk'
+
+    def find_without_ad(self, b, p, mc):
+
+        s = "//*[contains(@class, '_sEo') and .//*[contains(@class, '" + mc + "')] and .//div[contains(text(), '" + p + "')] and not(.//span[contains(@class, '_lLf')])]"
+
+        try:
+            t = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.XPATH, s)))
+            t.click()
+            return True
+        except TimeoutException:
             return False
 
     def click_part_text(self, fd, cd, b, pl):
@@ -191,7 +216,8 @@ class AutoSearch:
     def search_next_page(self, fd, cd, b, pg="Next"):
         try:
             n = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.LINK_TEXT, pg)))
-            print("***Clicked 'Next'***") if pg=="Next" else print("___Clicked 'Next' and Searched Page: " + pg +"___")
+            print("***Clicked 'Next'***") if pg == "Next" else print(
+                "___Clicked 'Next' and Searched Page: " + pg + "___")
         except TimeoutException:
             return True
         self.focus_and_click(n, fd, cd)
@@ -199,10 +225,11 @@ class AutoSearch:
 
     def click_link_in_map(self, b):
         try:
-            temp1 = WebDriverWait(b, 5).until(
+            tp1 = WebDriverWait(b, 5).until(
                 EC.presence_of_element_located((By.XPATH, '//*[@class="_chp ab_button"]')))
-            temp1.click()
-            print(">>>>>>>Found in Google map<<<<<<<")
+            time.sleep(5)
+            tp1.click()
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Found in Google map <<<<<<<")
             return True
         except TimeoutException:
             print("cannot find nextarts link")
@@ -228,18 +255,18 @@ class AutoSearch:
             b.quit()
             return False
         self.focus_and_click(c, fd, cd)
-        print(">>>>>>>Clicked on Found link at Page " + str(pages)+"<<<<<<<")
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Clicked on Found link at Page " + str(pages) + "  <<<<<<<")
         return True
 
     def focus_and_click(self, obj, fd, cd):
-        #chrome not support
-        #obj.send_keys(Keys.NULL)
+        # chrome not support
+        # obj.send_keys(Keys.NULL)
         time.sleep(fd)
         obj.click()  # click the link
         time.sleep(cd)
 
 
-browswers = ["Chrome", "Firefox"]
+browswers = ["Firefox", "Chrome"]
 
 phrases = ["event lighting san francisco",
            "audio equipment rental napa",
@@ -274,7 +301,6 @@ phrases = ["event lighting san francisco",
            "audio equipment rental san Francisco bay area",
            "audio visual equipment rental san francisco bay area",
            "big screen tv rental san francisco",
-           "lighting san francisco",
            "audio visual company san Francisco",
            "audio visual company san Francisco bay area",
            "audio visual company napa",
@@ -293,9 +319,10 @@ times = 1
 print("---------------------------------------------------------------------")
 print("------------------------------Start----------------------------------")
 print("---------------------------------------------------------------------")
+print("###########################################################################")
 for phrase in phrases:
     AutoSearch(times, phrase, random.choice(browswers))
-    
+
 print("---------------------------------------------------------------------")
 print("------------------------------END------------------------------------")
 print("---------------------------------------------------------------------")
