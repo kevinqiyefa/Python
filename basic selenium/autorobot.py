@@ -82,7 +82,8 @@ class AutoSearch:
                      "Affordable Daily Large Flat Screen",
                      "Drape | NextArts.org NextArts - Bay Area",
                      "Event Lighting | NextArts.org",
-                     "Audio Visual Equipment Rentals - Bay Area"]
+                     "Audio Visual Equipment Rentals - Bay Area",
+                     "Stanchions | NextArts.org NextArts"]
 
             # need to refresh the page to get page_source
             browser.refresh()
@@ -138,22 +139,29 @@ class AutoSearch:
                         break
 
             else:
-                ending_site = ["BBB Business Profile | NextArts", "NextArts - Lighting & Decor",
+                ending_site = ["BBB Business Profile | NextArts", "NextArts - Lighting",
                                "NextArts (San Francisco, CA):", "NextArts - San Francisco"]
-                endlink = random.choice(ending_site)
+
+                endlinks = my_shuffle(ending_site)
                 time.sleep(focus_delays)
+
                 while True:
-                    if endlink in browser.page_source:
-                        print("found ending link: '" + endlink + "'")
-                        if not self.click_in_organic(focus_delays, click_delays, browser, endlink, page):
-                            print("cannot click ending link")
+                    found_end_site = False
+
+                    for el in endlinks:
+                        if el in browser.page_source:
+                            print("found ending link: '" + el + "'")
+                            found_end_site = True
+                            if not self.click_in_organic(focus_delays, click_delays, browser, el, page):
+                                print("cannot click the link")
+                            time.sleep(click_delays)
+                            break
+                    if found_end_site:
                         break
                     else:
-                        if self.search_next_page(focus_delays, click_delays, browser):
-                            page += 1
-                            print("no BBB in organic")
-                            browser.quit()
-                            break
+                        print("No ending links in first page of organic")
+                        browser.quit()
+                        break
 
             browser.quit()
             print("")
@@ -266,62 +274,74 @@ class AutoSearch:
         time.sleep(cd)
 
 
+def my_shuffle(array):
+    random.shuffle(array)
+    return array
+
+
 browswers = ["Firefox", "Chrome"]
 
-phrases = ["event lighting san francisco",
-           "audio equipment rental napa",
-           "audio equipment rental san francisco",
-           "sound system rental san francisco",
-           "event lighting napa",
-           "lighting napa",
-           "projector rental san francisco",
-           "drapery rental san francisco bay area",
-           "lighting san francisco",
-           "large display rental san francisco",
-           "lighting company san francisco",
-           "av rental company san Francisco",
-           "av rental company san Francisco bay area",
-           "av rental company napa",
-           "av rental company wine country",
-           "wedding lighting san francisco bay area",
-           "wedding lighting san francisco",
-           "lighting san francisco",
-           "lighting san francisco bay area",
-           "pipe and drape rental san Francisco",
-           "drape rental san Francisco",
-           "pipe and drape rental san Francisco bay area",
-           "drape rental san Francisco bay area",
-           "lcd projector rental san Francisco",
-           "lcd projector rental san Francisco bay area",
-           "projector rental san Francisco",
-           "projector rental san Francisco bay area",
-           "audio visual rental san Francisco",
-           "audio visual rental san Francisco bay area",
-           "audio equipment rental san Francisco",
-           "audio equipment rental san Francisco bay area",
-           "audio visual equipment rental san francisco bay area",
-           "big screen tv rental san francisco",
-           "audio visual company san Francisco",
-           "audio visual company san Francisco bay area",
-           "audio visual company napa",
-           "audio visual company wine country",
-           "sound system rental san francisco",
-           "flat screen tv rental san francisco",
-           "rent flat screen tv san francisco",
-           "rent big screen tv for day san francisco",
-           "Microphone rental san francisco",
-           "Wireless microphone rental san francisco",
-           "Microphone rental napa",
-           "Wireless microphone rental napa",
-           "NextArts"]
+keywords = ["event lighting san francisco",
+            "audio equipment rental napa",
+            "audio equipment rental san francisco",
+            "sound system rental san francisco",
+            "event lighting napa",
+            "lighting napa",
+            "projector rental san francisco",
+            "drapery rental san francisco bay area",
+            "lighting san francisco",
+            "large display rental san francisco",
+            "lighting company san francisco",
+            "av rental company san Francisco",
+            "av rental company san Francisco bay area",
+            "av rental company napa",
+            "av rental company wine country",
+            "wedding lighting san francisco bay area",
+            "wedding lighting san francisco",
+            "lighting san francisco",
+            "lighting san francisco bay area",
+            "pipe and drape rental san Francisco",
+            "drape rental san Francisco",
+            "pipe and drape rental san Francisco bay area",
+            "drape rental san Francisco bay area",
+            "lcd projector rental san Francisco",
+            "lcd projector rental san Francisco bay area",
+            "projector rental san Francisco",
+            "projector rental san Francisco bay area",
+            "audio visual rental san Francisco",
+            "audio visual rental san Francisco bay area",
+            "audio equipment rental san Francisco",
+            "audio equipment rental san Francisco bay area",
+            "audio visual equipment rental san francisco bay area",
+            "big screen tv rental san francisco",
+            "audio visual company san Francisco",
+            "audio visual company san Francisco bay area",
+            "audio visual company napa",
+            "audio visual company wine country",
+            "sound system rental san francisco",
+            "flat screen tv rental san francisco",
+            "rent flat screen tv san francisco",
+            "rent big screen tv for day san francisco",
+            "Microphone rental san francisco",
+            "Wireless microphone rental san francisco",
+            "Microphone rental napa",
+            "Wireless microphone rental napa",
+            "Red carpet rental san Francisco",
+            "Red carpet rental Napa"]
+
+ending_keyword = "NextArts"
 
 times = 1
 print("---------------------------------------------------------------------")
 print("------------------------------Start----------------------------------")
 print("---------------------------------------------------------------------")
 print("###########################################################################")
-for phrase in phrases:
-    AutoSearch(times, phrase, random.choice(browswers))
+
+new_keywords = my_shuffle(keywords)
+
+for kw in new_keywords:
+    AutoSearch(times, kw, random.choice(browswers))
+AutoSearch(times, ending_keyword, random.choice(browswers))
 
 print("---------------------------------------------------------------------")
 print("------------------------------END------------------------------------")
