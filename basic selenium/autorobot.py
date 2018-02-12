@@ -17,10 +17,12 @@ class AutoSearch:
 
         # optional loop for each keyword
         while i < t:
+            chrome_options = webdriver.ChromeOptions()
+            chrome_options.add_argument("--disable-infobars")            
             if br == "Firefox":
                 browser = webdriver.Firefox()
             else:
-                browser = webdriver.Chrome()
+                browser = webdriver.Chrome(chrome_options=chrome_options)
             self.open_google_and_search(p, focus_delays, browser)
             time.sleep(3)
             print("")
@@ -82,7 +84,7 @@ class AutoSearch:
                      "Affordable Daily Large Flat Screen",
                      "Drape | NextArts.org NextArts - Bay Area",
                      "Event Lighting | NextArts.org",
-                     "Audio Visual Equipment Rentals - Bay Area",
+                     "Audio Visual Equipment Rentals - Bay Area", 
                      "Stanchions | NextArts.org NextArts"]
 
             # need to refresh the page to get page_source
@@ -141,13 +143,13 @@ class AutoSearch:
             else:
                 ending_site = ["BBB Business Profile | NextArts", "NextArts - Lighting",
                                "NextArts (San Francisco, CA):", "NextArts - San Francisco"]
-
+                
                 endlinks = my_shuffle(ending_site)
                 time.sleep(focus_delays)
-
+                
                 while True:
                     found_end_site = False
-
+                    
                     for el in endlinks:
                         if el in browser.page_source:
                             print("found ending link: '" + el + "'")
@@ -162,6 +164,7 @@ class AutoSearch:
                         print("No ending links in first page of organic")
                         browser.quit()
                         break
+
 
             browser.quit()
             print("")
@@ -274,59 +277,59 @@ class AutoSearch:
         time.sleep(cd)
 
 
+
 def my_shuffle(array):
     random.shuffle(array)
     return array
 
-
 browswers = ["Firefox", "Chrome"]
 
-keywords = ["event lighting san francisco",
-            "audio equipment rental napa",
-            "audio equipment rental san francisco",
-            "sound system rental san francisco",
-            "event lighting napa",
-            "lighting napa",
-            "projector rental san francisco",
-            "drapery rental san francisco bay area",
-            "lighting san francisco",
-            "large display rental san francisco",
-            "lighting company san francisco",
-            "av rental company san Francisco",
-            "av rental company san Francisco bay area",
-            "av rental company napa",
+keywords = ["event lighting San Francisco",
+            "audio equipment rental Napa",
+            "audio equipment rental San Francisco",
+            "sound system rental San Francisco",
+            "event lighting Napa",
+            "lighting Napa",
+            "projector rental San Francisco",
+            "drapery rental San Francisco bay area",
+            "lighting San Francisco",
+            "large display rental San Francisco",
+            "lighting company San Francisco",
+            "av rental company San Francisco",
+            "av rental company San Francisco bay area",
+            "av rental company Napa",
             "av rental company wine country",
-            "wedding lighting san francisco bay area",
-            "wedding lighting san francisco",
-            "lighting san francisco",
-            "lighting san francisco bay area",
-            "pipe and drape rental san Francisco",
-            "drape rental san Francisco",
-            "pipe and drape rental san Francisco bay area",
-            "drape rental san Francisco bay area",
-            "lcd projector rental san Francisco",
-            "lcd projector rental san Francisco bay area",
-            "projector rental san Francisco",
-            "projector rental san Francisco bay area",
-            "audio visual rental san Francisco",
-            "audio visual rental san Francisco bay area",
-            "audio equipment rental san Francisco",
-            "audio equipment rental san Francisco bay area",
-            "audio visual equipment rental san francisco bay area",
-            "big screen tv rental san francisco",
-            "audio visual company san Francisco",
-            "audio visual company san Francisco bay area",
-            "audio visual company napa",
+            "wedding lighting San Francisco bay area",
+            "wedding lighting San Francisco",
+            "lighting San Francisco",
+            "lighting San Francisco bay area",
+            "pipe and drape rental San Francisco",
+            "drape rental San Francisco",
+            "pipe and drape rental San Francisco bay area",
+            "drape rental San Francisco bay area",
+            "lcd projector rental San Francisco",
+            "lcd projector rental San Francisco bay area",
+            "projector rental San Francisco",
+            "projector rental San Francisco bay area",
+            "audio visual rental San Francisco",
+            "audio visual rental San Francisco bay area",
+            "audio equipment rental San Francisco",
+            "audio equipment rental San Francisco bay area",
+            "audio visual equipment rental San Francisco bay area",
+            "big screen tv rental San Francisco",
+            "audio visual company San Francisco",
+            "audio visual company San Francisco bay area",
+            "audio visual company Napa",
             "audio visual company wine country",
-            "sound system rental san francisco",
-            "flat screen tv rental san francisco",
-            "rent flat screen tv san francisco",
-            "rent big screen tv for day san francisco",
-            "Microphone rental san francisco",
-            "Wireless microphone rental san francisco",
-            "Microphone rental napa",
-            "Wireless microphone rental napa",
-            "Red carpet rental san Francisco",
+            "sound system rental San Francisco",
+            "flat screen tv rental San Francisco",
+            "rent flat screen tv San Francisco",
+            "rent big screen tv for day San Francisco",
+            "Microphone rental San Francisco",
+            "Wireless microphone rental San Francisco",
+            "Microphone rental Napa",
+            "Wireless microphone rental Napa",
+            "Red carpet rental San Francisco",
             "Red carpet rental Napa"]
 
 ending_keyword = "NextArts"
