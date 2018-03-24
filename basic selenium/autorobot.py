@@ -187,7 +187,8 @@ class AutoSearch:
     def click_more_place_button(self, fd, cd, b):
         try:
             # wait the page finish loading then find "More Place"
-            e = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "_R4k")))
+            #e = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "_R4k")))
+            e = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.CLASS_NAME, "DLOTif")))
             self.focus_and_click(e, fd, cd)
             return True
         except TimeoutException:
@@ -196,17 +197,24 @@ class AutoSearch:
 
     def check_class_in_map_link(self, b):
         try:
-            temp = WebDriverWait(b, 1).until(
-                EC.presence_of_element_located((By.XPATH, "//*[contains(@class, '_iPk _Ml')]")))
+            #temp = WebDriverWait(b, 1).until(
+                #EC.presence_of_element_located((By.XPATH, "//*[contains(@class, '_iPk _Ml')]")))
 
-            return '_iPk _Ml'
+            temp = WebDriverWait(b, 1).until(
+                EC.presence_of_element_located((By.XPATH, "//*[contains(@class, 'dbg0pd')]")))
+
+            #return '_iPk _Ml'
+            return 'dbg0pd'
 
         except TimeoutException:
-            return '_iPk'
+            #return '_iPk'
+            return 'dbg0pd'
 
     def find_without_ad(self, b, p, mc):
 
-        s = "//*[contains(@class, '_sEo') and .//*[contains(@class, '" + mc + "')] and .//div[contains(text(), '" + p + "')] and not(.//span[contains(@class, '_lLf')])]"
+        #s = "//*[contains(@class, '_sEo') and .//*[contains(@class, '" + mc + "')] and .//div[contains(text(), '" + p + "')] and not(.//span[contains(@class, '_lLf')])]"
+
+        s = "//*[contains(@class, 'cXedhc') and .//*[contains(@class, '" + mc + "')] and .//div[contains(text(), '" + p + "')] and not(.//span[contains(@class, 'gghBu')])]"
 
         try:
             t = WebDriverWait(b, 5).until(EC.presence_of_element_located((By.XPATH, s)))
@@ -236,8 +244,10 @@ class AutoSearch:
 
     def click_link_in_map(self, b):
         try:
+            #tp1 = WebDriverWait(b, 5).until(
+                #EC.presence_of_element_located((By.XPATH, '//*[@class="_chp ab_button"]')))
             tp1 = WebDriverWait(b, 5).until(
-                EC.presence_of_element_located((By.XPATH, '//*[@class="_chp ab_button"]')))
+                EC.presence_of_element_located((By.XPATH, '//*[@class="LJOFid ab_button"]')))
             time.sleep(5)
             tp1.click()
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Found in Google map <<<<<<<")
